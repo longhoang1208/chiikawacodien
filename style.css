@@ -1,3 +1,7 @@
 body {
     background: black;
 }
+
+.char-img {
+    width: 8vw;
+}
