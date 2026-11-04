@@ -1,7 +1,36 @@
 body {
-    background: black;
+    background: linear-gradient(
+        to bottom right,
+        pink,
+        rgb(246, 226, 148)
+    );
+
+    background-attachment: fixed;
+    background-size: cover;
 }
 
-.char-img {
-    width: 8vw;
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.char-card {
+    width: 5vw;
+    height: 5vw;
+    padding: 0;
+
+    background: radial-gradient(
+        rgb(251, 244, 183) 60%,
+        rgb(240, 221, 46)
+    );
+    border: 2px solid rgb(255, 193, 48);
+    border-radius: 0.2em;
+
+    box-shadow: 0 0 1em rgb(88, 71, 112);
+}
+
+.char-card img {
+    width: 4.5vw;
 }
