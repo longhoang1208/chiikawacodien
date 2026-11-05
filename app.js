@@ -5,18 +5,146 @@ const boardHeight = 9;
 const boardElement = document.getElementById('board');
 
 const character = {
-    aoko:       "./characters/aoko.png",
-    chiikabu:   "./characters/chiikabu.png",
-    chiikawa:   "./characters/chiikawa.png",
-    furuhonya:  "./characters/furuhonya.png",
-    hachiware:  "./characters/hachiware.png",
-    kurimanju:  "./characters/kurimanju.png",
-    momonga:    "./characters/momonga.png",
-    rakko:      "./characters/rakko.png",
-    shisa:      "./characters/shisa.png",
-    siren:      "./characters/siren.png",
-    usagi:      "./characters/usagi.png"
+    aoko: {
+        path: "./characters/aoko.png",
+        val: 1
+    },
+
+    aoko_2: {
+        path: "./characters/aoko_2.png",
+        val: 2
+    },
+
+    chiikabu: {
+        path: "./characters/chiikabu.png",
+        val: 3
+    },
+
+    chiikabu_2: {
+        path: "./characters/chiikabu_2.png",
+        val: 4
+    },
+    chiikawa: {
+        path: "./characters/chiikawa.png",
+        val: 5
+    },
+
+    chiikawa_2: {
+        path: "./characters/chiikawa_2.png",
+        val: 6
+    },
+    furuhonya: {
+        path: "./characters/furuhonya.png",
+        val: 7
+    },
+
+    furuhonya_2: {
+        path: "./characters/furuhonya_2.png",
+        val: 8
+    },
+
+    hachiware: {
+        path: "./characters/hachiware.png",
+        val: 9
+    },
+
+    hachiware_2: {
+        path: "./characters/hachiware_2.png",
+        val: 10
+    },
+    kurimanju: {
+        path: "./characters/kurimanju.png",
+        val: 11
+    },
+
+    kurimanju_2: {
+        path: "./characters/kurimanju_2.png",
+        val: 12
+    },
+
+    momonga: {
+        path: "./characters/momonga.png",
+        val: 13
+    },
+
+    momonga_2: {
+        path: "./characters/momonga_2.png",
+        val: 14
+    },
+
+    rakko: {
+        path: "./characters/rakko.png",
+        val: 15
+    },
+
+    rakko_2: {
+        path: "./characters/rakko_2.png",
+        val: 16
+    },
+
+    rakko_3: {
+        path: "./characters/rakko_3.png",
+        val: 17
+    },
+
+    rakko_4: {
+        path: "./characters/rakko_4.png",
+        val: 18
+    },
+
+    shisa: {
+        path: "./characters/shisa.png",
+        val: 19
+    },
+
+    shisa_2: {
+        path: "./characters/shisa_2.png",
+        val: 20
+    },
+
+    siren: {
+        path: "./characters/siren.png",
+        val: 21
+    },
+
+    siren_2: {
+        path: "./characters/siren_2.png",
+        val: 22
+    },
+
+    usagi: {
+        path: "./characters/usagi.png",
+        val: 23
+    },
+
+    usagi_2: {
+        path: "./characters/usagi_2.png",
+        val: 24
+    },
+
+    usagi_3: {
+        path: "./characters/usagi_3.png",
+        val: 25
+    },
+
+    usagi_4: {
+        path: "./characters/usagi_4.png",
+        val: 26
+    },
+
+    usagi_5: {
+        path: "./characters/usagi_5.png",
+        val: 27
+    },
+
+    usagi_6: {
+        path: "./characters/usagi_6.png",
+        val: 28
+    },
 };
+
+
+const charKeys = Object.keys(character);
 
 
 let board = Array.from({length: boardHeight + 2}, () => {
@@ -33,23 +161,48 @@ console.log(board);
 console.log(board.length);
 console.log(board[1].length);
 
-function makeRow() {
-    const charKeys = Object.keys(character);
+
+function getRandomPairs() {
+    const charNum = boardWidth * boardHeight;
+    let list = [];
+
+    for (let i=0; i < charNum; i += 2) {
+        const key = charKeys[Math.floor(Math.random() * charKeys.length)];
+
+        list.push(key, key);
+    }
+
+    // <---------- Fisher-Yates Shuffle ---------->
+    for (let i = list.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j], list[i]];
+    }
+
+    return list;
+}
+
+
+function fillBoardRandom() {
     boardElement.replaceChildren();
-    
+    let charsList = getRandomPairs();
+
     for (let r_idx=1; r_idx <= boardHeight; r_idx++) {
         const rowElement = document.createElement('div');
         rowElement.className = 'row';
         
         for (let c_idx=1; c_idx <= boardWidth; c_idx++) {
             if (board[r_idx][c_idx] !== 0) {
-                const key = charKeys[Math.floor(Math.random() * charKeys.length)];
+                const key = charsList.pop();
+                
                 const button = document.createElement('button');
                 button.className = 'char-card';
+                button.dataset.row = r_idx;
+                button.dataset.col = c_idx;
 
                 const img = document.createElement('img');
-                img.src = character[key];
+                img.src = character[key].path;
                 img.alt = key;
+                board[r_idx][c_idx] = character[key].val;
 
                 button.append(img);
                 rowElement.append(button);
@@ -60,4 +213,97 @@ function makeRow() {
     }
 }
 
-makeRow();
+fillBoardRandom();
+console.log(board);
+
+
+// <====================== STRAIGHT LINE CONNECT ======================>
+// HORIZONTAL
+function checkRow(board, r_idx, c1, c2) {
+    for (let c_idx = Math.min(c1, c2) + 1; c_idx < Math.max(c1, c2); c_idx++) {
+        if (board[r_idx][c_idx] !== 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+// VERTICAL
+function checkCol(board, c_idx, r1, r2) {
+    for (let r_idx = Math.min(r1, r2) + 1; r_idx < Math.max(r1, r2); r_idx++) {
+        if (board[r_idx][c_idx] !== 0) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+
+// <====================== SELECT CELL ======================>
+let selected = null;
+
+function getCard(row, col) {
+    return boardElement.querySelectorAll(
+        `.char-card[data-row="${row}"][data-c="${col}"]`
+    );
+}
+
+function select(row, col, el) {
+    selected = { row, col, el };
+    selected.el.classList.add('selected');
+}
+
+function clearSelection() {
+    if (selected) {
+        selected.el.classList.remove('selected');
+        selected.el.classList.remove('active');
+    }
+    selected = null;
+}
+
+function removePair(cell_1, cell_2) {
+    board[cell_1.row][cell_1.col] = 0;
+    board[cell_2.row][cell_2.col] = 0;
+
+    cell_1.el.style.visibility = 'hidden';   // Hide element, keep the board layout
+    cell_2.el.style.visibility = 'hidden';
+}
+
+boardElement.addEventListener('click', (e) => {
+    const el = e.target.closest('.char-card');  // click vao <img> van nhan data cua <button>
+    if (!el) return;
+
+    el.classList.add('active')
+
+    const row = Number(el.dataset.row);
+    const col = Number(el.dataset.col);
+
+    if (board[row][col] === 0) return;
+
+    // Click on not-selected cell -> select this cell
+    if (!selected) {
+        select(row, col, el);
+        return;
+    }
+
+    // Click on selected cell -> unselect this cell
+    if (selected.row === row && selected.col === col) {
+        clearSelection();
+        return;
+    }
+
+    // <-------------------- Check 2 selected cells -------------------- >
+    //              The selected cell                       Current cell
+    const is_Same = board[selected.row][selected.col] === board[row][col];
+
+    if (is_Same) {
+        removePair(selected, { row, col, el });
+        clearSelection();
+
+    }else{
+        clearSelection();
+        select(row, col, el);
+    }
+})
