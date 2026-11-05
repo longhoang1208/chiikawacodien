@@ -174,7 +174,7 @@ function getRandomPairs() {
 
     // <---------- Fisher-Yates Shuffle ---------->
     for (let i = list.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(Math.random() * (i + 1));
         [list[i], list[j]] = [list[j], list[i]];
     }
 
@@ -218,26 +218,28 @@ console.log(board);
 
 
 // <====================== CHECK CONNECTION ======================>
-function lineClear(r1, r2, c1, c2) {
+function lineClear(r1, c1, r2, c2) {
     // HORIZONTAL LINE
     if (r1 === r2) {
-        for (let c_idx = Math.min(c1, c2) + 1; c_idx < Math.max(c1, c2); c_idx++) {
-            if (board[r_idx][c_idx] !== 0) {
+        for (let c = Math.min(c1, c2) + 1; c < Math.max(c1, c2); c++) {
+            if (board[r1][c] !== 0) {
                 return false;
             }
         }
+        return true
     }
 
     // VERTICAL LINE
     if (c1 === c2) {
-        for (let r_idx = Math.min(r1, r2) + 1; r_idx < Math.max(r1, r2); r_idx++) {
-            if (board[r_idx][c_idx] !== 0) {
+        for (let r = Math.min(r1, r2) + 1; r < Math.max(r1, r2); r++) {
+            if (board[r][c1] !== 0) {
                 return false;
             }
         }
+        return true;
     }
     
-    return true;
+    return false;
 }
 
 function canConnect(a, b) {
@@ -252,7 +254,7 @@ function canConnect(a, b) {
 
     if (
         (r1 === r2 || c1 === c2) &&
-        lineClear(r1, r2, c1, c2)
+        lineClear(r1, c1, r2, c2)
     ) return true;
 
     // 1 lần rẽ: chữ L, thử 2 góc (r1,c2) và (r2,c1)
@@ -278,17 +280,24 @@ function canConnect(a, b) {
             lineClear(r2, c, r2, c2)
         ) return true;
     }
+    
+    // 2 lần rẽ: quét từng hàng làm đường ngang trung gian
+    for (let r = 0; r < boardHeight + 2; r++) {
+        if (r === r1 || r === r2) continue;
+        if (board[r][c1] === 0 &&
+            board[r][c2] === 0 &&
+            lineClear(r1, c1, r, c1) && // Từ điểm đầu -> điểm bắt đầu đg nối ngang
+            lineClear(r, c1, r, c2) &&  // Điểm bắt đầu đg ngang -> điểm cuối đg ngang
+            lineClear(r, c2, r2, c2)    // Điểm cuối đg ngang -> điểm cuối
+        ) return true;
+    }
+
+    return false;
 }
 
 
 // <====================== SELECT CELL ======================>
-    let selected = null;
-
-function getCard(row, col) {
-    return boardElement.querySelectorAll(
-        `.char-card[data-row="${row}"][data-c="${col}"]`
-    );
-}
+let selected = null;
 
 function select(row, col, el) {
     selected = { row, col, el };
@@ -338,7 +347,7 @@ boardElement.addEventListener('click', (e) => {
     //              The selected cell                       Current cell
     const is_Same = board[selected.row][selected.col] === board[row][col];
     
-    if (is_Same) {
+    if (is_Same && canConnect([selected.row, selected.col], [row, col])) {
         removePair(selected, { row, col, el });
         clearSelection();
         
