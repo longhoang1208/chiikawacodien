@@ -2,7 +2,7 @@ body {
     background: linear-gradient(
         to bottom right,
         rgb(140, 245, 144),
-        rgb(141, 230, 194)
+        rgb(99, 237, 182)
     );
 
     background-attachment: fixed;
@@ -54,11 +54,11 @@ body {
 }
 
 .char-card:active {
-    background: rgb(255, 255, 255);
+    background: rgb(201, 201, 201);
 }
 
 .char-card.active {
-    background: rgb(250, 255, 235);
+    background: rgb(125, 110, 77);
     box-shadow: 0 0 2em rgb(255, 255, 255);
 }
 

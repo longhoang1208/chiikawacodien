@@ -217,32 +217,72 @@ fillBoardRandom();
 console.log(board);
 
 
-// <====================== STRAIGHT LINE CONNECT ======================>
-// HORIZONTAL
-function checkRow(board, r_idx, c1, c2) {
-    for (let c_idx = Math.min(c1, c2) + 1; c_idx < Math.max(c1, c2); c_idx++) {
-        if (board[r_idx][c_idx] !== 0) {
-            return false;
+// <====================== CHECK CONNECTION ======================>
+function lineClear(r1, r2, c1, c2) {
+    // HORIZONTAL LINE
+    if (r1 === r2) {
+        for (let c_idx = Math.min(c1, c2) + 1; c_idx < Math.max(c1, c2); c_idx++) {
+            if (board[r_idx][c_idx] !== 0) {
+                return false;
+            }
         }
     }
 
+    // VERTICAL LINE
+    if (c1 === c2) {
+        for (let r_idx = Math.min(r1, r2) + 1; r_idx < Math.max(r1, r2); r_idx++) {
+            if (board[r_idx][c_idx] !== 0) {
+                return false;
+            }
+        }
+    }
+    
     return true;
 }
 
-// VERTICAL
-function checkCol(board, c_idx, r1, r2) {
-    for (let r_idx = Math.min(r1, r2) + 1; r_idx < Math.max(r1, r2); r_idx++) {
-        if (board[r_idx][c_idx] !== 0) {
-            return false;
-        }
-    }
+function canConnect(a, b) {
+    const [r1, c1] = a;
+    const [r2, c2] = b;
 
-    return true;
+    if (r1 === r2 && c1 === c2) return false;
+    if (
+        board[r1][c1] !== board[r2][c2] ||
+        board[r1][c1] === 0
+    ) return false;
+
+    if (
+        (r1 === r2 || c1 === c2) &&
+        lineClear(r1, r2, c1, c2)
+    ) return true;
+
+    // 1 lần rẽ: chữ L, thử 2 góc (r1,c2) và (r2,c1)
+    if (
+        board[r1][c2] === 0 &&
+        lineClear(r1, c1, r1, c2) &&
+        lineClear(r1, c2, r2, c2)
+    ) return true;
+
+    if (
+        board[r2][c1] === 0 &&
+        lineClear(r1, c1, r2, c1) &&
+        lineClear(r2, c1, r2, c2)
+    ) return true;
+
+    // 2 lần rẽ: quét từng cột làm đường dọc trung gian
+    for (let c = 0; c < boardWidth + 2; c++) {
+        if (c === c1 || c === c2) continue;
+        if (board[r1][c] === 0 &&
+            board[r2][c] === 0 &&
+            lineClear(r1, c1, r1, c) &&
+            lineClear(r1, c, r2, c) &&
+            lineClear(r2, c, r2, c2)
+        ) return true;
+    }
 }
 
 
 // <====================== SELECT CELL ======================>
-let selected = null;
+    let selected = null;
 
 function getCard(row, col) {
     return boardElement.querySelectorAll(
@@ -266,7 +306,7 @@ function clearSelection() {
 function removePair(cell_1, cell_2) {
     board[cell_1.row][cell_1.col] = 0;
     board[cell_2.row][cell_2.col] = 0;
-
+    
     cell_1.el.style.visibility = 'hidden';   // Hide element, keep the board layout
     cell_2.el.style.visibility = 'hidden';
 }
@@ -274,34 +314,34 @@ function removePair(cell_1, cell_2) {
 boardElement.addEventListener('click', (e) => {
     const el = e.target.closest('.char-card');  // click vao <img> van nhan data cua <button>
     if (!el) return;
-
+    
     el.classList.add('active')
-
+    
     const row = Number(el.dataset.row);
     const col = Number(el.dataset.col);
-
+    
     if (board[row][col] === 0) return;
-
+    
     // Click on not-selected cell -> select this cell
     if (!selected) {
         select(row, col, el);
         return;
     }
-
+    
     // Click on selected cell -> unselect this cell
     if (selected.row === row && selected.col === col) {
         clearSelection();
         return;
     }
-
+    
     // <-------------------- Check 2 selected cells -------------------- >
     //              The selected cell                       Current cell
     const is_Same = board[selected.row][selected.col] === board[row][col];
-
+    
     if (is_Same) {
         removePair(selected, { row, col, el });
         clearSelection();
-
+        
     }else{
         clearSelection();
         select(row, col, el);
