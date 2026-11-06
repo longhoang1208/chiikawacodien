@@ -156,34 +156,6 @@ function getCard(row, col) {
     );
 }
 
-// Tâm của ô (r, c) theo pixel, tính từ góc trên trái của khung bọc
-function cellCenter(r, c) {
-    const wrapRect = wrapperElement.getBoundingClientRect();
-    const first = getCard(1, 1).getBoundingClientRect();
-    const stepX = getCard(1, 2).getBoundingClientRect().left - first.left;
-    const stepY = getCard(2, 1).getBoundingClientRect().top - first.top;
-
-    return {
-        x: first.left - wrapRect.left + first.width / 2 + (c - 1) * stepX,
-        y: first.top - wrapRect.top + first.height / 2 + (r - 1) * stepY
-    };
-}
-
-function drawPath(path) {
-    const points = path
-        .map(([r, c]) => {
-            const p = cellCenter(r, c);
-            return `${p.x},${p.y}`;
-        })
-        .join(' ');
-
-    const line = document.createElementNS(SVG_NS, 'polyline');
-    line.setAttribute('points', points);
-    line.setAttribute('class', 'path-line');
-    pathLayer.append(line);
-
-    setTimeout(() => line.remove(), 400);   // tự xoá sau 0,4 giây
-}
 
 let board = Array.from({length: boardHeight + 2}, () => {
     return Array(boardWidth + 2).fill(0);
@@ -332,6 +304,37 @@ function canConnect(a, b) {
     }
 
     return null;
+}
+
+
+// <====================== DRAW CONNECT PATH ======================>
+// Tâm của ô (r, c) theo pixel, tính từ góc trên trái của khung bọc
+function cellCenter(r, c) {
+    const wrapRect = wrapperElement.getBoundingClientRect();
+    const first = getCard(1, 1).getBoundingClientRect();
+    const stepX = getCard(1, 2).getBoundingClientRect().left - first.left;
+    const stepY = getCard(2, 1).getBoundingClientRect().top - first.top;
+
+    return {
+        x: first.left - wrapRect.left + first.width / 2 + (c - 1) * stepX,
+        y: first.top - wrapRect.top + first.height / 2 + (r - 1) * stepY
+    };
+}
+
+function drawPath(path) {
+    const points = path
+        .map(([r, c]) => {
+            const p = cellCenter(r, c);
+            return `${p.x},${p.y}`;
+        })
+        .join(' ');
+
+    const line = document.createElementNS(SVG_NS, 'polyline');
+    line.setAttribute('points', points);
+    line.setAttribute('class', 'path-line');
+    pathLayer.append(line);
+
+    setTimeout(() => line.remove(), 400);   // tự xoá sau 0,4 giây
 }
 
 

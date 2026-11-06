@@ -1,8 +1,10 @@
 body {
     background: linear-gradient(
-        to bottom right,
-        rgb(140, 245, 144),
-        rgb(99, 237, 182)
+        to bottom,
+        rgb(26, 44, 55) 0.1%,
+        rgb(37, 74, 113) 20%,
+        rgb(26, 44, 55),
+        rgb(3, 10, 23)
     );
 
     background-attachment: fixed;
