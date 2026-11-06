@@ -150,13 +150,6 @@ const character = {
 const charKeys = Object.keys(character);
 
 
-function getCard(row, col) {
-    return boardElement.querySelector(
-        `.char-card[data-row="${row}"][data-col="${col}"]`
-    );
-}
-
-
 let board = Array.from({length: boardHeight + 2}, () => {
     return Array(boardWidth + 2).fill(0);
 });
@@ -172,23 +165,30 @@ console.log(board.length);
 console.log(board[1].length);
 
 
+// <====================== GET RANDOM CARD PAIRS ======================>
 function getRandomPairs() {
-    const charNum = boardWidth * boardHeight;
-    let list = [];
+    const pairCount = (boardWidth * boardHeight) / 2;   // 72 pairs
+    const list = [];
 
-    for (let i=0; i < charNum; i += 2) {
-        const key = charKeys[Math.floor(Math.random() * charKeys.length)];
+    const keys = [...charKeys];  // Create copy of charKeys
+    shuffle(keys);
 
+    // Phát lần lượt theo vòng tròn: key0, key1, ..., key27, key0, key1, ...
+    for (let i = 0; i < pairCount; i++) {
+        const key = keys[i % keys.length];
         list.push(key, key);
     }
 
-    // <---------- Fisher-Yates Shuffle ---------->
-    for (let i = list.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [list[i], list[j]] = [list[j], list[i]];
-    }
-
+    shuffle(list);
     return list;
+}
+
+// <---------- Fisher-Yates Shuffle ---------->
+function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
 }
 
 
@@ -308,6 +308,13 @@ function canConnect(a, b) {
 
 
 // <====================== DRAW CONNECT PATH ======================>
+
+function getCard(row, col) {
+    return boardElement.querySelector(
+        `.char-card[data-row="${row}"][data-col="${col}"]`
+    );
+}
+
 // Tâm của ô (r, c) theo pixel, tính từ góc trên trái của khung bọc
 function cellCenter(r, c) {
     const wrapRect = wrapperElement.getBoundingClientRect();
