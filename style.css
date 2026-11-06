@@ -14,6 +14,37 @@ body {
 }
 
 
+#board-wrapper {
+    position: relative;
+}
+
+#path-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;       /* đường nối ở viền ngoài vẫn hiện */
+    pointer-events: none;    /* không chặn click vào ô */
+}
+
+.path-line {
+    fill: none;
+    stroke: rgb(255, 255, 255);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 4px rgb(255, 80, 120));
+
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: draw 0.25s linear forwards;
+}
+
+@keyframes draw {
+    to { stroke-dashoffset: 0; }
+}
+
 #board {
     display: flex;
     flex-direction: column;

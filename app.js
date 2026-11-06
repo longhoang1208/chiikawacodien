@@ -3,6 +3,10 @@ const boardWidth = 16;
 const boardHeight = 9;
 
 const boardElement = document.getElementById('board');
+const wrapperElement = document.getElementById('board-wrapper');
+const pathLayer = document.getElementById('path-layer');
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
 const character = {
     aoko: {
@@ -143,9 +147,43 @@ const character = {
     },
 };
 
-
 const charKeys = Object.keys(character);
 
+
+function getCard(row, col) {
+    return boardElement.querySelector(
+        `.char-card[data-row="${row}"][data-col="${col}"]`
+    );
+}
+
+// Tâm của ô (r, c) theo pixel, tính từ góc trên trái của khung bọc
+function cellCenter(r, c) {
+    const wrapRect = wrapperElement.getBoundingClientRect();
+    const first = getCard(1, 1).getBoundingClientRect();
+    const stepX = getCard(1, 2).getBoundingClientRect().left - first.left;
+    const stepY = getCard(2, 1).getBoundingClientRect().top - first.top;
+
+    return {
+        x: first.left - wrapRect.left + first.width / 2 + (c - 1) * stepX,
+        y: first.top - wrapRect.top + first.height / 2 + (r - 1) * stepY
+    };
+}
+
+function drawPath(path) {
+    const points = path
+        .map(([r, c]) => {
+            const p = cellCenter(r, c);
+            return `${p.x},${p.y}`;
+        })
+        .join(' ');
+
+    const line = document.createElementNS(SVG_NS, 'polyline');
+    line.setAttribute('points', points);
+    line.setAttribute('class', 'path-line');
+    pathLayer.append(line);
+
+    setTimeout(() => line.remove(), 400);   // tự xoá sau 0,4 giây
+}
 
 let board = Array.from({length: boardHeight + 2}, () => {
     return Array(boardWidth + 2).fill(0);
@@ -246,29 +284,30 @@ function canConnect(a, b) {
     const [r1, c1] = a;
     const [r2, c2] = b;
 
-    if (r1 === r2 && c1 === c2) return false;
+    if (r1 === r2 && c1 === c2) return null;
     if (
         board[r1][c1] !== board[r2][c2] ||
         board[r1][c1] === 0
-    ) return false;
+    ) return null;
 
+    // 0 lần rẽ
     if (
         (r1 === r2 || c1 === c2) &&
         lineClear(r1, c1, r2, c2)
-    ) return true;
+    ) return [a, b];
 
     // 1 lần rẽ: chữ L, thử 2 góc (r1,c2) và (r2,c1)
     if (
         board[r1][c2] === 0 &&
         lineClear(r1, c1, r1, c2) &&
         lineClear(r1, c2, r2, c2)
-    ) return true;
+    ) return [a, [r1, c2], b];
 
     if (
         board[r2][c1] === 0 &&
         lineClear(r1, c1, r2, c1) &&
         lineClear(r2, c1, r2, c2)
-    ) return true;
+    ) return [a, [r2, c1], b];
 
     // 2 lần rẽ: quét từng cột làm đường dọc trung gian
     for (let c = 0; c < boardWidth + 2; c++) {
@@ -278,7 +317,7 @@ function canConnect(a, b) {
             lineClear(r1, c1, r1, c) &&
             lineClear(r1, c, r2, c) &&
             lineClear(r2, c, r2, c2)
-        ) return true;
+        ) return [a, [r1, c], [r2, c], b];
     }
     
     // 2 lần rẽ: quét từng hàng làm đường ngang trung gian
@@ -289,10 +328,10 @@ function canConnect(a, b) {
             lineClear(r1, c1, r, c1) && // Từ điểm đầu -> điểm bắt đầu đg nối ngang
             lineClear(r, c1, r, c2) &&  // Điểm bắt đầu đg ngang -> điểm cuối đg ngang
             lineClear(r, c2, r2, c2)    // Điểm cuối đg ngang -> điểm cuối
-        ) return true;
+        ) return [a, [r, c1], [r, c2], b];
     }
 
-    return false;
+    return null;
 }
 
 
@@ -346,12 +385,14 @@ boardElement.addEventListener('click', (e) => {
     // <-------------------- Check 2 selected cells -------------------- >
     //              The selected cell                       Current cell
     const is_Same = board[selected.row][selected.col] === board[row][col];
+    const path = is_Same ? canConnect([selected.row, selected.col], [row, col]) : null;
     
-    if (is_Same && canConnect([selected.row, selected.col], [row, col])) {
+    if (path) {
+        drawPath(path);
         removePair(selected, { row, col, el });
         clearSelection();
         
-    }else{
+    } else {
         clearSelection();
         select(row, col, el);
     }
