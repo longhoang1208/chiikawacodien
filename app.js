@@ -28,6 +28,7 @@ const character = {
         path: "./characters/chiikabu_2.png",
         val: 4
     },
+
     chiikawa: {
         path: "./characters/chiikawa.png",
         val: 5
@@ -37,113 +38,150 @@ const character = {
         path: "./characters/chiikawa_2.png",
         val: 6
     },
+
+    chiikawa_3: {
+        path: "./characters/chiikawa_3.png",
+        val: 7
+    },
+
+    chiikawa_4: {
+        path: "./characters/chiikawa_4.png",
+        val: 8
+    },
+
+    chiikawa_5: {
+        path: "./characters/chiikawa_5.png",
+        val: 9
+    },
+
     furuhonya: {
         path: "./characters/furuhonya.png",
-        val: 7
+        val: 10
     },
 
     furuhonya_2: {
         path: "./characters/furuhonya_2.png",
-        val: 8
+        val: 11
+    },
+
+    furuhonya_3: {
+        path: "./characters/furuhonya_3.png",
+        val: 12
     },
 
     hachiware: {
         path: "./characters/hachiware.png",
-        val: 9
+        val: 13
     },
 
     hachiware_2: {
         path: "./characters/hachiware_2.png",
-        val: 10
+        val: 14
     },
+
+    hachiware_3: {
+        path: "./characters/hachiware_3.png",
+        val: 15
+    },
+
     kurimanju: {
         path: "./characters/kurimanju.png",
-        val: 11
+        val: 16
     },
 
     kurimanju_2: {
         path: "./characters/kurimanju_2.png",
-        val: 12
+        val: 17
     },
 
     momonga: {
         path: "./characters/momonga.png",
-        val: 13
+        val: 18
     },
 
     momonga_2: {
         path: "./characters/momonga_2.png",
-        val: 14
+        val: 19
+    },
+
+    momonga_3: {
+        path: "./characters/momonga_3.png",
+        val: 20
     },
 
     rakko: {
         path: "./characters/rakko.png",
-        val: 15
+        val: 21
     },
 
     rakko_2: {
         path: "./characters/rakko_2.png",
-        val: 16
+        val: 22
     },
 
     rakko_3: {
         path: "./characters/rakko_3.png",
-        val: 17
+        val: 23
     },
 
     rakko_4: {
         path: "./characters/rakko_4.png",
-        val: 18
+        val: 24
     },
 
     shisa: {
         path: "./characters/shisa.png",
-        val: 19
+        val: 25
     },
 
     shisa_2: {
         path: "./characters/shisa_2.png",
-        val: 20
+        val: 26
+    },
+
+    shisa_3: {
+        path: "./characters/shisa_3.png",
+        val: 27
     },
 
     siren: {
         path: "./characters/siren.png",
-        val: 21
+        val: 28
     },
 
     siren_2: {
         path: "./characters/siren_2.png",
-        val: 22
+        val: 29
     },
 
     usagi: {
         path: "./characters/usagi.png",
-        val: 23
+        val: 30
     },
 
     usagi_2: {
         path: "./characters/usagi_2.png",
-        val: 24
+        val: 31
     },
 
     usagi_3: {
         path: "./characters/usagi_3.png",
-        val: 25
+        val: 32
     },
 
     usagi_4: {
         path: "./characters/usagi_4.png",
-        val: 26
+        val: 33
     },
 
     usagi_5: {
         path: "./characters/usagi_5.png",
-        val: 27
+        val: 34
     },
 
     usagi_6: {
         path: "./characters/usagi_6.png",
-        val: 28
+        val: 35
     },
 };
 
