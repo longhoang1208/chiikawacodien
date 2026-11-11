@@ -99,3 +99,35 @@ body {
 .char-card img {
     width: 3.6vw;
 }
+
+
+.btn {
+    align-self: flex-start;
+    border-radius: .8em;
+
+    margin: 0;
+    margin-top: 1em;
+
+    padding: .5em;
+
+    font-family: sans-serif;
+    font-size: 5cqh;
+
+    background: radial-gradient(
+        rgba(42, 42, 81, 0.845),
+        rgba(16, 16, 40, 0.845)
+    );
+    color: white;
+    border: 1px solid rgb(137, 137, 171);
+}
+
+.btn:hover {
+    cursor: pointer;
+}
+
+.btn:active {
+    background: radial-gradient(
+        rgba(98, 98, 149, 0.845),
+        rgba(49, 49, 94, 0.845)
+    );
+}

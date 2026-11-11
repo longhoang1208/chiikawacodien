@@ -407,6 +407,45 @@ function removePair(cell_1, cell_2) {
     cell_2.el.style.visibility = 'hidden';
 }
 
+
+// <====================== FIND A VALID MOVE ======================>
+function findMove() {
+    // Gom các ô còn lại theo loại: { val: [[r, c], ...] }
+    const groups = {};
+    for (let r = 1; r <= boardHeight; r++) {
+        for (let c = 1; c <= boardWidth; c++) {
+            const val = board[r][c];
+            if (val === 0) continue;
+            if (!groups[val]) {
+                groups[val] = [];
+            }
+            groups[val].push([r, c]);
+        }
+    }
+
+    // Thử mọi cặp trong cùng một nhóm
+    for (const cells of Object.values(groups)) {
+        for (let i = 0; i < cells.length; i++) {
+            for (let j = i + 1; j < cells.length; j++) {
+                const path = canConnect(cells[i], cells[j]);
+                if (path) {
+                    return { a: cells[i], b: cells[j], path };
+                }
+            }
+        }
+    }
+
+    return null;   // hết nước đi
+}
+
+function isBoardCleared() {
+    for (let r = 1; r <= boardHeight; r++)
+        for (let c = 1; c <= boardWidth; c++)
+            if (board[r][c] !== 0) return false;
+    return true;
+}
+
+
 boardElement.addEventListener('click', (e) => {
     const el = e.target.closest('.char-card');  // click vao <img> van nhan data cua <button>
     if (!el) return;
@@ -439,9 +478,77 @@ boardElement.addEventListener('click', (e) => {
         drawPath(path);
         removePair(selected, { row, col, el });
         clearSelection();
+
+        // Kiểm tra clear bảng
+        if (isBoardCleared()) {
+            setTimeout(() => alert('Bạn đã thắng!'), 450);
+        } else if (!findMove()) {
+            setTimeout(shuffleBoard, 450);   // đợi đường nối vẽ xong rồi mới xáo
+        }
         
     } else {
         clearSelection();
         select(row, col, el);
     }
 })
+
+
+// <====================== SHUFFLE BOARD ======================>
+// val -> key (để từ giá trị trong ma trận tìm lại đường dẫn ảnh)
+const keyByVal = {};
+for (const key of charKeys) {
+    keyByVal[character[key].val] = key;
+}
+
+function setCardImg(r, c, val) {
+    const key = keyByVal[val];
+    const img = getCard(r, c).querySelector('img');
+    img.src = character[key].path;
+    img.alt = key;
+}
+
+function shuffleBoard() {
+    clearSelection();
+
+    const cells = [];
+    const vals = [];
+    for (let r = 1; r <= boardHeight; r++) {
+        for (let c = 1; c <= boardWidth; c++) {
+            if (board[r][c] !== 0) {
+                cells.push([r, c]);
+                vals.push(board[r][c]);
+            }
+        }
+    }
+
+    if (cells.length === 0) return;
+
+    for (let attempt = 0; attempt < 200; attempt++) {
+        shuffle(vals);
+
+        cells.forEach(([r, c], i) => {
+            board[r][c] = vals[i];
+        });
+
+        if (findMove()) {
+            break;
+        }
+    }
+
+    // 3. Cập nhật ảnh trên giao diện
+    cells.forEach(([r, c]) => setCardImg(r, c, board[r][c]));
+}
+
+function showHint() {
+    clearSelection();
+
+    const move = findMove();
+    
+    if (!move) return;
+    getCard(...move.a).classList.add('active');
+    getCard(...move.b).classList.add('active');
+    setTimeout(() => {
+        getCard(...move.a).classList.remove('active');
+        getCard(...move.b).classList.remove('active');
+    }, 800);
+}
