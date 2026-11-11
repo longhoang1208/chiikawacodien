@@ -393,9 +393,6 @@ function select(row, col, el) {
 
 function clearSelection() {
     if (selected) {
-        if (selected.el.className === 'hint') {
-            selected.el.classList.remove('hint');
-        }
         selected.el.classList.remove('selected');
         selected.el.classList.remove('active');
     }
@@ -511,6 +508,8 @@ function setCardImg(r, c, val) {
 }
 
 function shuffleBoard() {
+    boardElement.querySelectorAll('.char-card.hint')
+        .forEach(card => card.classList.remove('hint'));
     clearSelection();
 
     const cells = [];
