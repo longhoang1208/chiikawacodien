@@ -393,6 +393,9 @@ function select(row, col, el) {
 
 function clearSelection() {
     if (selected) {
+        if (selected.el.className === 'hint') {
+            selected.el.classList.remove('hint');
+        }
         selected.el.classList.remove('selected');
         selected.el.classList.remove('active');
     }
@@ -545,10 +548,10 @@ function showHint() {
     const move = findMove();
     
     if (!move) return;
-    getCard(...move.a).classList.add('active');
-    getCard(...move.b).classList.add('active');
+    getCard(...move.a).classList.add('hint');
+    getCard(...move.b).classList.add('hint');
     setTimeout(() => {
-        getCard(...move.a).classList.remove('active');
-        getCard(...move.b).classList.remove('active');
+        getCard(...move.a).classList.remove('hint');
+        getCard(...move.b).classList.remove('hint');
     }, 800);
 }

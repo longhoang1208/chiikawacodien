@@ -96,6 +96,11 @@ body {
     box-shadow: 0 0 2em rgb(255, 255, 255);
 }
 
+.char-card.hint {
+    background: rgb(255, 255, 255);
+    box-shadow: 0 0 2em rgb(255, 251, 228);
+}
+
 .char-card img {
     width: 3.6vw;
 }
